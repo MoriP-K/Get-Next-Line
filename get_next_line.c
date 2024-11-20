@@ -6,7 +6,7 @@
 /*   By: morip <morip@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 15:00:59 by kmoriyam          #+#    #+#             */
-/*   Updated: 2024/11/19 01:07:46 by morip            ###   ########.fr       */
+/*   Updated: 2024/11/20 01:11:46 by morip            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,13 +51,13 @@ int	ft_getchar(int fd)
 	if (n == 0)
 	{
 		n = read(fd, buf, BUFFER_SIZE);
-		printf("n = %d\n", n);
-		if (n == -1)
-			return (0);
+		// if (n == -1)
+		// 	return (0);
 		buf_next = buf;
 	}
 	if (n >= 0)
 	{
+		printf("n = %d\n", n);
 		n--;
 		return ((unsigned char) *buf_next++);
 	}
@@ -95,14 +95,14 @@ char	*get_next_line(int fd)
 	// int read_bytes;
 	// char read_buf[BUFFER_SIZE];
 	static char	*save = "";
-	// char	*str1;
-	// char	*str2;
 	char c;
 
 
 	while (1)
 	{
 		c = ft_getchar(fd);
+		// if (c == 0)
+		// 	return (save);
 		save = ft_strjoin_char(save, c);
 		if (c == '\n')
 		{
@@ -111,7 +111,7 @@ char	*get_next_line(int fd)
 			// if (read_bytes == -1)
 			// 	return (NULL);
 		}
-		else if (c == -1)
+		else if (c == EOF)
 			return (NULL);
 	}
 	return (save);
@@ -122,22 +122,19 @@ char	*get_next_line(int fd)
 int	main()
 {
 	int fd;
-	// int i;
 	char *s;
 	// char c;
 
 	fd = open("memo.txt", O_RDONLY);
 	if (fd == -1)
 		return (1);
-	// i = 0;
-	// while (get_next_line(fd))
 	while (1)
 	{
 		s = get_next_line(fd);
 		printf("gnl: s\n%s\n", s);
 		if (!s)
 		{
-			write(1, "P\n", 2);
+			// write(1, "P\n", 2);
 			break;
 		}
 		// c = ft_getchar(fd);
