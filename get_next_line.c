@@ -6,7 +6,7 @@
 /*   By: kmoriyam <kmoriyam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/16 15:00:59 by kmoriyam          #+#    #+#             */
-/*   Updated: 2024/11/21 20:41:37 by kmoriyam         ###   ########.fr       */
+/*   Updated: 2024/11/23 17:22:36 by kmoriyam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,24 +23,6 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-char	*ft_strchr(const char *str, int c)
-{
-	int	i;
-
-	if (!str)
-		return (NULL);
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == c)
-			return ((char *)&str[i]);
-		i++;
-	}
-	if (c == '\0')
-		return ((char *)&str[i]);
-	return (NULL);
-}
-
 int	ft_getchar(int fd)
 {
 	static char	buf[BUFFER_SIZE];
@@ -50,120 +32,119 @@ int	ft_getchar(int fd)
 	if (n == 0)
 	{
 		n = read(fd, buf, BUFFER_SIZE);
+		if (n == -1)
+		{
+			n = 0;
+			buf_next = buf;
+			return (EOF);
+		}
 		buf_next = buf;
 	}
 	if (n > 0)
 	{
-		// printf("n = %d\n", n);
-		// printf("buf_next = %c\n", *buf_next);
 		n--;
 		return ((unsigned char)*buf_next++);
 	}
 	return (EOF);
 }
 
-char	*ft_strjoin_char(const char *s, const char c)
+char	*ft_strjoin_char(char *s, char c)
 {
 	char	*combined_str;
 	int		i_s;
-	char	*c_to_s;
 
 	if (!s)
 		return (NULL);
 	combined_str = (char *)malloc(ft_strlen(s) + 1 + 1);
 	if (!combined_str)
+	{
+		free(s);
 		return (NULL);
-	c_to_s = (char *)malloc(1);
-	if (!c_to_s)
-		return (NULL);
-	c_to_s[0] = c;
+	}
 	i_s = 0;
 	while (s[i_s])
 	{
 		combined_str[i_s] = s[i_s];
 		i_s++;
 	}
-	// write(1, "1\n", 2);
-	combined_str[i_s] = c_to_s[0];
+	combined_str[i_s] = c;
 	combined_str[i_s + 1] = '\0';
+	free(s);
 	return (combined_str);
 }
-
-// char	*ft_strcopy_nl(char *dest, char *src, char c)
-// {
-// 	int	i;
-
-// 	i = 0
-// 	while ()
-// }
 
 char	*get_next_line(int fd)
 {
 	char	*line;
-	char	c;
-	int		start;
+	char	*line_ptr;
+	int		c;
 
-	// static char	*save = "";
-	// int read_bytes;
-	// char read_buf[BUFFER_SIZE];
-	// char	*ptr_start;
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
 	line = (char *)malloc(1);
+	if (!line)
+		return (NULL);
 	line[0] = '\0';
-	start = 0;
 	while (1)
 	{
 		c = ft_getchar(fd);
 		if (c == EOF)
 		{
 			if (line[0])
+			{
+				// line_ptr = line;
+				// free(line);
 				return (line);
+			}
 			else
+			{
+				free(line);
 				return (NULL);
+			}
 		}
-		line = ft_strjoin_char(line, c);
+		line_ptr = ft_strjoin_char(line, (char)c);
+		if (!line_ptr)
+			return (NULL);
+		line = line_ptr;
 		if (c == '\n')
-		{
-			// ft_strcopy_nl(line, save, c);
 			break ;
-		}
-		start++;
 	}
-	// save = ft_strchr(line, '\n');
-	// save = line;
-	// ptr_start = line;
-	// while (line++)
-	// {
-	// 	save++;
-	// }
-	// free(line);
-	// save = "";
 	return (line);
 }
 
-#include <fcntl.h>
+// #include <fcntl.h>
 
-int	main(void)
-{
-	int		fd;
-	char	*s;
+// int	main(void)
+// {
+// 	int		fd;
+// 	char	*s;
 
-	// char c;
-	fd = open("memo.txt", O_RDONLY);
-	if (fd == -1)
-		return (1);
-	while (1)
-	{
-		s = get_next_line(fd);
-		printf("%s", s);
-		if (!s)
-		{
-			// write(1, "P\n", 2);
-			break ;
-		}
-		// c = ft_getchar(fd);
-		// printf("gch: c = %c\n", c);
-		// if (c == -1)
-		// 	break ;
-	}
-	close(fd);
-}
+// 	fd = open("memo.txt", O_RDONLY);
+// 	if (fd == -1)
+// 		return (1);
+// 	while (1)
+// 	{
+// 		s = get_next_line(fd);
+// 		printf("%s", s);
+// 		if (!s)
+// 		{
+// 			break ;
+// 		}
+// 		free(s);
+// 	}
+// 	// free(s);
+// 	close(fd);
+// 	// fd = open("memo.txt", O_RDONLY);
+// 	// if (fd == -1)
+// 	// 	return (1);
+// 	// while (1)
+// 	// {
+// 	// 	s = get_next_line(fd);
+// 	// 	printf("%s", s);
+// 	// 	if (!s)
+// 	// 	{
+// 	// 		break ;
+// 	// 	}
+// 	// }
+// 	// close(fd);
+// }
